@@ -1,0 +1,23 @@
+{
+  "name": "umzug-sync",
+  "version": "0.0.1",
+  "description": "Sequelize (PG) migrations for distributed systems",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SGrondin/umzug-sync.git"
+  },
+  "author": "SGrondin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SGrondin/umzug-sync/issues"
+  },
+  "homepage": "https://github.com/SGrondin/umzug-sync",
+  "dependencies": {
+    "bluebird": "3.4.x",
+    "umzug": "1.11.x"
+  }
+}
