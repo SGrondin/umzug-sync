@@ -63,6 +63,14 @@ var releaseLock = function (sequelize, id) {
 }
 
 exports.migrate = function (params) {
+  var shutdown = false
+  var signalHandler = function (signal) {
+    shutdown = true
+  }
+  process.on('SIGINT', signalHandler)
+  process.on('SIGTERM', signalHandler)
+  process.on('SIGHUP', signalHandler)
+
   var lockTimeout = (Number.isInteger(params.timeout) && params.timeout > 0) ? params.timeout : 15
   var systemTimeout = lockTimeout * 2
   var config = {
@@ -81,6 +89,14 @@ exports.migrate = function (params) {
   if (params.chdir) {
     process.chdir(params.chdir)
   }
+  var cleanup = function () {
+    if (params.chdir) {
+      process.chdir(cwd)
+    }
+    process.removeListener('SIGINT', signalHandler)
+    process.removeListener('SIGTERM', signalHandler)
+    process.removeListener('SIGHUP', signalHandler)
+  }
   var umzug = new Umzug(config)
 
   var mutex = ''
@@ -97,30 +113,21 @@ exports.migrate = function (params) {
     return umzug.up()
   })
   .then(function () {
-    // Always reset the chdir
-    if (params.chdir) {
-      process.chdir(cwd)
-    }
+    cleanup()
     return releaseLock(params.sequelize, mutex)
   })
   .catch(ExitEarly, function () {
     return Promise.resolve()
   })
   .then(function () {
-    // Always reset the chdir
-    if (params.chdir) {
-      process.chdir(cwd)
-    }
+    cleanup()
     return Promise.resolve()
   })
   .catch(ExitTimeout, function () {
     return Promise.reject(new Error('Could not execute the migrations within ' + systemTimeout + ' seconds (2 * timeout).'))
   })
   .catch(function (err) {
-    // Always reset the chdir
-    if (params.chdir) {
-      process.chdir(cwd)
-    }
+    cleanup()
     return Promise.reject(err)
   })
 }
