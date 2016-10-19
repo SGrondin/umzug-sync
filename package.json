@@ -1,6 +1,6 @@
 {
   "name": "umzug-sync",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Sequelize (PG) migrations for distributed systems",
   "main": "index.js",
   "scripts": {
