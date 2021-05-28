@@ -4,12 +4,9 @@ var Umzug = require('umzug')
 var Promise = require('bluebird')
 var util = require('util')
 
-function ExitEarly () { this.custom = true }
-ExitEarly.prototype = Object.create(Error.prototype)
-function ExitTimeout () { this.custom = true }
-ExitTimeout.prototype = Object.create(Error.prototype)
-function ExitError (message) { this.message = message; this.custom = true }
-ExitError.prototype = Object.create(Error.prototype)
+class ExitEarly extends Error { constructor() {this.custom = true} }
+class ExitTimeout extends Error { constructor() {this.custom = true} }
+class ExitError extends Error { constructor() {this.message = message; this.custom = true} }
 
 var mutexTableName = 'SequelizeMetaMutexes' // Intentionally hardcoded
 var createMutexTable = function (sequelize) {
